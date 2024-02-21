@@ -2,6 +2,4 @@
 sidebar_position: 6
 ---
 
-# Roadmap
-
-kubeskoop roadmap
+# Latency Detection

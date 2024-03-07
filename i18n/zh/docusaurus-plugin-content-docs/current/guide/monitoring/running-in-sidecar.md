@@ -1,32 +1,32 @@
 ---
-sidebar_position: 7
+sidebar_position: 2
 ---
 
-# Running in Sidecar Mode
+# 使用Sidecar模式
 
-For some reasons, you may want to only collect metrics from a certain subset of pods in the cluster, or when using secure containers such as [Kata Container](https://katacontainers.io/), which is not possible to directly collect pod metrics on node.
+出于需要，你可能只想监控集群中某一部分Pod的网络指标。并且在使用像[Kata Container](https://katacontainers.io/)等安全容器时，在节点上无法直接采集到pod中的指标。
 
-In these cases, you can enable **sidecar mode** for KubeSkoop exporter. You need to:
+这种情况下，你可以开启KubeSkoop exporter的**sidecar模式**，你需要：
 
-- Add exporter to target pod as a sidecar container.
-- Add `--sidecar` flag to command.
-- Pass Pod and Node information via environment variables.
+- 将exporter放入目标Pod中，作为一个sidecar容器运行。
+- 在启动命令中添加`--sidecar`参数。
+- 在环境变量中传入Pod和Node的相关信息。
 
-By adding `--sidecar` to command flags, you can run KubeSkoop exporter in sidecar mode, which will only collect network info in current namespace.
+可以在启动命令中添加`--sidecar`参数来让KubeSkoop exporter使用sidecar模式运行。在这个模式下，只会采集当前命名空间下的网络指标。
 
-In this case, KubeSkoop exporter will fetch metric labels(pod name/namespace, node name) from environment variables. You should pass the correct values to them via [Downward API](https://kubernetes.io/docs/concepts/workloads/pods/downward-api/).
+在sidecar模式下，KubeSkoop exporter会从环境变量中获得metric所使用的标签（Pod名称/命名空间，Node名称）。你需要通过[Downward API](https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/downward-api/)将正确的值传入环境变量中。
 
-| Environment Variable Name | Description |
+| 环境变量名称 | 说明 |
 | ---  | ----------- |
-| INSPECTOR_NODENAME |  Node name |
-| INSPECTOR_PODNAME | Pod name |
-| INSPECTOR_PODNAMESPACE | Pod namespace |
+| INSPECTOR_NODENAME |  Node名称 |
+| INSPECTOR_PODNAME | Pod名称 |
+| INSPECTOR_PODNAMESPACE | Pod命名空间 |
 
-## Example
+## 示例
 
-This example shows how to run an nginx deployment with KubeSkoop exporter sidecar.
+接下来的示例会演示如何在一个nginx deployment中运行KubeSkoop exporter的sidecar容器。
 
-Save the yaml manifests below and apply to your Kubernetes cluster.
+保存以下yaml文件，并将其apply到你的Kubernetes集群中。
 
 ```yaml
 apiVersion: apps/v1
@@ -48,7 +48,7 @@ spec:
         image: nginx
         ports:
         - containerPort: 80
-      # add KubeSkoop exporter sidecar container
+      # add KubeSkoop sidecar container
       - name: exporter
         image: kubeskoop/kubeskoop:latest
         imagePullPolicy: Always
@@ -109,15 +109,15 @@ data:
       loki_address: loki-service
 ```
 
-This will create a Deployment `nginx-with-exporter` in your `default` namespace, along with ConfigMap `kubeskoop-config`.
+这个文件将会在`default`命名空间下创建名为`nginx-with-exporter`的Deployment，以及ConfigMap`kubeskoop-config`用于配置。
 
-When pod started, you can get metrics from pod via `kubectl`.
+当Pod启动后，你便可以通过`kubectl`来获得Pod中的metrics。
 
 ```shell
 kubectl get --raw /api/v1/namespaces/default/pods/{{kubeskoop-exporter pod name}}:9102/proxy/metrics
 ```
 
-The output should be like:
+示例输出如下：
 
 ```plaintext
 # HELP inspector_pod_ioioreadbytes io ioioreadbytes count in netns/pod
@@ -141,6 +141,6 @@ inspector_pod_netdevrxdropped{namespace="default",node="node1",pod="nginx-with-e
 # ...and more
 ```
 
-## Limitations
+## 限制
 
-For now, probes base on eBPF are not supported in sidecar mode.
+当前sidecar模式暂不支持基于eBPF的探针。

@@ -89,7 +89,7 @@ const config = {
             items: [
               {
                 label: 'Tutorial',
-                to: '/docs/quick-start',
+                to: '/docs/getting-started/quick-start',
               },
             ],
           },

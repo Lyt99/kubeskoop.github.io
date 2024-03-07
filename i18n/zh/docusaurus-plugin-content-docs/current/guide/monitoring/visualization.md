@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # 可视化配置
 
 ## 使用 Prometheus & Grafana 进行指标的可视化

@@ -12,7 +12,7 @@
     "description": "The generated-index page description for category Tutorial in sidebar tutorialSidebar"
   },
   "sidebar.tutorialSidebar.category.Getting Started": {
-    "message": "开始",
+    "message": "快速开始",
     "description": "The label for category Contribute in sidebar tutorialSidebar"
   },
   "sidebar.tutorialSidebar.category.Contribute": {
